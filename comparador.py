@@ -7,8 +7,8 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 class Servicio(BaseModel):
-    nombre: str
-    precio: float
+    descripcion: str
+    valor_facturado: float
 
 class Factura(BaseModel):
     id: int
@@ -18,21 +18,23 @@ class Factura(BaseModel):
 
 def construir_prompt(f1: Factura, f2: Factura) -> str:
     def servicios_a_texto(servicios):
-        return "\n".join([f"- {s.nombre}: ${s.precio}" for s in servicios])
+        return "\n".join([
+            f"- {s.descripcion}: ${s.valor_facturado:.2f}" for s in servicios
+        ])
     return f"""
 Cliente: {f1.cliente}
 
-Factura actual:
+📄 Factura actual:
 Fecha: {f1.fecha}
 Servicios:
 {servicios_a_texto(f1.servicios)}
 
-Factura anterior:
+📄 Factura anterior:
 Fecha: {f2.fecha}
 Servicios:
 {servicios_a_texto(f2.servicios)}
 
-Compara ambas facturas y genera una descripción en lenguaje natural.
+🧠 Compara ambas facturas y genera una descripción en lenguaje natural.
 """
 
 def comparar_facturas_con_ia(f1: Factura, f2: Factura, deepseek_client: OpenAI, openai_client: OpenAI):
